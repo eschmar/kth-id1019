@@ -13,7 +13,7 @@ double(N) ->
 %
 
 fahrenheit2celsius(F) ->
-    C = (F - 32) / 1.8.
+    (F - 32) / 1.8.
 
 %
 %   Area functions
@@ -41,3 +41,11 @@ exp(X, 0) ->
     1;
 exp(X, Y) ->
     product(X, exp(X, Y - 1)).
+
+exp2(X, 1) ->
+    X;
+exp2(X, N) ->
+    case N rem 2 of
+        0 -> exp2(X, N div 2) * exp2(X, N div 2);
+        1 -> exp2(X, N - 1) * X
+    end.
