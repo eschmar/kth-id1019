@@ -83,3 +83,38 @@ pack_insert(X, [Head | Tail]) ->
 append(X, []) -> [X];
 append(X, [Head | Tail]) -> [Head | append(X, Tail)].
 
+%
+%   insertion sort
+%
+
+insert(Element, []) -> [Element];
+insert(Element, [Current | Tail]) ->
+    if
+        Element >= Current -> [Current | insert(Element, Tail)];
+        true -> [Element | [Current | Tail]]
+    end.
+
+insertionsort(List) -> insertionsort_acc(List, []).
+insertionsort_acc([], List) -> List;
+insertionsort_acc([Current | Tail], Sorted) -> insertionsort_acc(Tail, insert(Current, Sorted)).
+
+%
+%   merge sort, unstable
+%
+
+% mergesort([]) -> [];
+% mergesort([Head | []]) -> [Head];
+% mergesort(List) ->
+%     {Left, Right} = split(List, [], []),
+%     merge(mergesort(Left), mergesort(Right)).
+
+% split([], Left, Right) -> {Left, Right};
+% split([Head | Tail], Left, Right) -> split(Tail, Right, [Head | Left]).
+
+% merge(Left, []) -> Left;
+% merge([], Right) -> Right;
+% merge([Left | LeftTail], [Right | RightTail]) ->
+%     if
+%         Left < Right -> [Left | merge(LeftTail, [Right | RightTail])];
+%         true -> [Right | merge([Left | LeftTail], Right)]
+%     end.
