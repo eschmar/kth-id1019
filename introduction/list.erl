@@ -102,19 +102,36 @@ insertionsort_acc([Current | Tail], Sorted) -> insertionsort_acc(Tail, insert(Cu
 %   merge sort, unstable
 %
 
-% mergesort([]) -> [];
-% mergesort([Head | []]) -> [Head];
-% mergesort(List) ->
-%     {Left, Right} = split(List, [], []),
-%     merge(mergesort(Left), mergesort(Right)).
+mergesort([]) -> [];
+mergesort([Head | []]) -> [Head];
+mergesort(List) ->
+    {Left, Right} = split(List, [], []),
+    merge(mergesort(Left), mergesort(Right)).
 
-% split([], Left, Right) -> {Left, Right};
-% split([Head | Tail], Left, Right) -> split(Tail, Right, [Head | Left]).
+split([], Left, Right) -> {Left, Right};
+split([Head | Tail], Left, Right) -> split(Tail, Right, [Head | Left]).
 
-% merge(Left, []) -> Left;
-% merge([], Right) -> Right;
-% merge([Left | LeftTail], [Right | RightTail]) ->
-%     if
-%         Left < Right -> [Left | merge(LeftTail, [Right | RightTail])];
-%         true -> [Right | merge([Left | LeftTail], Right)]
-%     end.
+merge(Left, []) -> Left;
+merge([], Right) -> Right;
+merge([Left | LeftTail], [Right | RightTail]) ->
+    if
+        Left < Right -> [Left | merge(LeftTail, [Right | RightTail])];
+        true -> [Right | merge([Left | LeftTail], RightTail)]
+    end.
+
+%
+%   quick sort
+%
+
+quicksort([]) -> [];
+quicksort([Pivot | Tail]) ->
+    {Left, Right} = quick_split(Pivot, Tail, [], []),
+    quicksort(Left) ++ [Pivot] ++ quicksort(Right).
+
+quick_split(_, [], Left, Right) ->
+    {Left, Right};
+quick_split(Pivot, [Current | Tail], Left, Right) ->
+    if
+        Current < Pivot -> quick_split(Pivot, Tail, append(Current, Left), Right);
+        true -> quick_split(Pivot, Tail, Left, append(Current, Right))
+    end.
