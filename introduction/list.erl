@@ -41,9 +41,9 @@ duplicate_tail(L) -> duplicate_acc(L, []).
 duplicate_acc([], Acc) -> reverse(Acc);
 duplicate_acc([X | Tail], Acc) -> duplicate_acc(Tail, [X, X | Acc]).
 
-reverse(L) -> reverse_acc(L, []).
-reverse_acc([], Acc) -> Acc;
-reverse_acc([X | Tail], Acc) -> reverse_acc(Tail, [X | Acc]).
+reverse(L) -> reverse(L, []).
+reverse([], Acc) -> Acc;
+reverse([X | Tail], Acc) -> reverse(Tail, [X | Acc]).
 
 %
 %   unique
@@ -135,3 +135,34 @@ quick_split(Pivot, [Current | Tail], Left, Right) ->
         Current < Pivot -> quick_split(Pivot, Tail, append(Current, Left), Right);
         true -> quick_split(Pivot, Tail, Left, append(Current, Right))
     end.
+
+
+%
+%   reverse naive vs tail-recursive
+%
+
+bench() ->
+    Ls = [16, 32, 64, 128, 256, 512],
+    N = 100,
+    Bench = fun(L) ->
+        S = lists:seq(1,L),
+        Tn = time(N, fun() -> nreverse(S) end),
+        Tr = time(N, fun() -> reverse(S) end),
+        io:format("length: ~10w nrev: ~8w us rev: ~8w us~n", [L, Tn, Tr])
+        end,
+    lists:foreach(Bench, Ls).
+
+time(N, F)->
+    %% time in micro seconds
+    T1 = erlang:system_time(micro_seconds),
+    loop(N, F),
+    T2 = erlang:system_time(micro_seconds),
+    (T2 -T1).
+
+loop(N, Fun) ->
+    if N == 0 -> ok; true -> Fun(), loop(N-1, Fun) end.
+
+nreverse([]) -> [];
+nreverse([H|T]) ->
+    R = nreverse(T),
+    append(R, [H]).
