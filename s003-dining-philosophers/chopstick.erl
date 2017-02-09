@@ -47,6 +47,10 @@ return(Stick) ->
             ok
     end.
 
+quit(Stick) ->
+    io:format(" ------------------> ~p terminates ~p.", [self(), Stick]),
+    Stick ! quit.
+
 %
 %   helper
 %

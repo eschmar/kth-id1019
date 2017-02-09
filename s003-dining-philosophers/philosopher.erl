@@ -62,6 +62,6 @@ eat(Guest) ->
 %
 
 sleep() ->
-    timer:sleep(timer:seconds(1 + rand:uniform(3))).
+    timer:sleep(timer:seconds(1 + rand:uniform(2))).
 
 out(Str, Guest) -> io:format("~s ~s (~p).~n", [Guest#philo.name, Str, self()]).
