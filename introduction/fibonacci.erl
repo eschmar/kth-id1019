@@ -2,21 +2,21 @@
 -compile(export_all).
 
 %
-%  fibonacci, O(2^N)
+%  fibonacci, naive O(2^N)
 %
 
-fib(N) when N > 1 -> fib(N-2) + fib(N-1);
-fib(1) -> 1;
-fib(0) -> 0.
+fib_naive(N) when N > 1 -> fib_naive(N-2) + fib_naive(N-1);
+fib_naive(1) -> 1;
+fib_naive(0) -> 0.
 
 %
 %   fibonacci, dynamic O(n)
 %
 
-fibb(0) -> {1, na};
-fibb(1) -> {1, 1};
-fibb(N) ->
-    {N1, N2} = fibb(N-1),
+fib(0) -> {1, na};
+fib(1) -> {1, 1};
+fib(N) ->
+    {N1, N2} = fib(N-1),
     {N1+N2, N1}.
 
 %
@@ -27,8 +27,8 @@ bench() ->
     Ls = [8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,40],
     N = 10,
     Bench = fun(L) ->
-        Tn = time(N, fun() -> fib(L) end),
-        Tr = time(N, fun() -> fibb(L) end),
+        Tn = time(N, fun() -> fib_naive(L) end),
+        Tr = time(N, fun() -> fib(L) end),
         io:format("n: ~4w naive: ~8w us dyn: ~8w us~n", [L, Tn, Tr])
         end,
     lists:foreach(Bench, Ls).
