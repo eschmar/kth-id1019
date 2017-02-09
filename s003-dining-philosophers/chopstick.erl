@@ -6,20 +6,49 @@
 %
 
 start() ->
-    spawn_link(fun() -> ... end).
+    out("Spawn new chopstick"),
+    spawn_link(fun() -> available() end).
 
 available() ->
+    out("Chopstick available"),
     receive
-        ... ->
-            :
+        {request, From} ->
+            From ! granted,
+            gone();
         quit ->
             ok
     end.
 
 gone() ->
+    out("Chopstick gone"),
     receive
-        ... ->
-            :
+        {return, From} ->
+            From ! released,
+            available();
         quit ->
             ok
     end.
+
+%
+%   api
+%
+
+request(Stick) ->
+    Stick ! {request, self()},
+    receive
+        granted ->
+            ok
+    end.
+
+return(Stick) ->
+    Stick ! {return, self()},
+    receive
+        released ->
+            ok
+    end.
+
+%
+%   helper
+%
+
+out(Str) -> io:format("~s (~p).~n", [Str, self()]).
