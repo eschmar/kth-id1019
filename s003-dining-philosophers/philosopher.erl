@@ -2,6 +2,10 @@
 -compile(export_all).
 -record(philo, {hungry, left, right, name, ctrl}).
 
+-define(SleepBase, 1).
+-define(SleepRandom, 2).
+-define(SleepDiv, 10).
+
 %
 %   philosopher, 3 states: dream, wait, eat
 %
@@ -62,6 +66,6 @@ eat(Guest) ->
 %
 
 sleep() ->
-    timer:sleep(timer:seconds(1 + rand:uniform(2))).
+    timer:sleep(timer:seconds(?SleepBase + rand:uniform(?SleepRandom)) div ?SleepDiv).
 
 out(Str, Guest) -> io:format("~s ~s (~p).~n", [Guest#philo.name, Str, self()]).
