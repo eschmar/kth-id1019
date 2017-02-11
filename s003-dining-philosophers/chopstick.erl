@@ -14,17 +14,20 @@ available() ->
     receive
         {request, From} ->
             From ! granted,
-            gone();
+            gone(From);
         quit ->
             ok
     end.
 
-gone() ->
+gone(Holder) ->
     out("Chopstick gone"),
     receive
-        {return, From} ->
-            From ! released,
+        {return, Holder} ->
+            Holder ! released,
             available();
+        {return, From} ->
+            From ! denied,
+            gone(Holder);
         quit ->
             ok
     end.
@@ -33,11 +36,20 @@ gone() ->
 %   api
 %
 
-request(Stick) ->
+request(Stick, Stick2, Timeout) ->
     Stick ! {request, self()},
+    timer:sleep(100),
+    Stick2 ! {request, self()},
+    case receiveStick(Timeout) of
+        ok -> receiveStick(Timeout);
+        denied -> denied
+    end.    
+
+receiveStick(Timeout) ->
     receive
         granted ->
             ok
+    after Timeout -> denied
     end.
 
 return(Stick) ->
