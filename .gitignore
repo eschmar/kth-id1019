@@ -15,5 +15,6 @@ rel/example_project
 # End of https://www.gitignore.io/api/erlang
 
 *.DS_Store
-*.jpg
-*.ppm
+
+s004-mandelbrot/*.jpg
+s004-mandelbrot/*.ppm
