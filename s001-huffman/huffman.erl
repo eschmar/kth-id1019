@@ -17,13 +17,18 @@ sample() -> "the quick brown fox jumps over the lazy dog
 
 text() -> "this is something that we should encode".
 
-test() ->
+test() -> huffman(sample(), text()).
+
+test2() ->
+    Sample = read("foo.txt", 9999),
+    Text = read("foo.txt", 58),
+    huffman(Sample, Text).
+
+huffman(Sample, Text) ->
     init(),
-    Sample = sample(),
     Tree = tree(Sample),
     Encode = encode_table(Tree),
 
-    Text = text(),
     color:out("Source:", magenta),
     color:out(Text, green),
 
@@ -34,6 +39,17 @@ test() ->
     color:out("Decode:", magenta),
     Decoded = decode(Seq, Tree),
     color:out(Decoded, cyan).
+
+read(File, N) ->
+    {ok, Fd} = file:open(File, [read, binary]),
+    {ok, Binary} = file:read(Fd, N),
+    file:close(Fd),
+    case unicode:characters_to_list(Binary, utf8) of
+        {incomplete, List, _} ->
+            List;
+        List ->
+            List
+    end.
 
 %
 %   extract frequency of characters
