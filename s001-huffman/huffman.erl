@@ -20,12 +20,20 @@ text() -> "this is something that we should encode".
 test() ->
     init(),
     Sample = sample(),
-    color:out("Pew", magenta),
     Tree = tree(Sample),
     Encode = encode_table(Tree),
+
     Text = text(),
+    color:out("Source:", magenta),
+    color:out(Text, green),
+
     Seq = encode(Text, Encode),
-    Text = decode(Seq, Tree).
+    color:out("Encoded sequence:", magenta),
+    erlang:display(Seq),
+
+    color:out("Decode:", magenta),
+    Decoded = decode(Seq, Tree),
+    color:out(Decoded, cyan).
 
 %
 %   extract frequency of characters
@@ -34,7 +42,7 @@ test() ->
 freq(Sample) -> freq(Sample, []).
 
 freq([], Freq) ->
-    quicksort(Freq);
+    insertionsort(Freq);
 freq([Char | Rest], Freq) ->
     freq(Rest, freq_insert(Char, Freq)).
 
@@ -47,26 +55,21 @@ freq_insert(Char, [Current | Tail]) ->
     end.
 
 %
-%   frequency quick sort
+%   insertion sort
 %
 
-append(X, []) -> [X];
-append(X, [Head | Tail]) -> [Head | append(X, Tail)].
-
-quicksort([]) -> [];
-quicksort([Pivot | Tail]) ->
-    {Left, Right} = quick_split(Pivot, Tail, [], []),
-    quicksort(Left) ++ [Pivot] ++ quicksort(Right).
-
-quick_split(_, [], Left, Right) ->
-    {Left, Right};
-quick_split(Pivot, [Current | Tail], Left, Right) ->
-    {_, A} = Pivot,
+insert(Element, []) -> [Element];
+insert(Element, [Current | Tail]) ->
+    {_, A} = Element,
     {_, B} = Current,
     if
-        B < A -> quick_split(Pivot, Tail, append(Current, Left), Right);
-        true -> quick_split(Pivot, Tail, Left, append(Current, Right))
+        B > A -> [Current | insert(Element, Tail)];
+        true -> [Element | [Current | Tail]]
     end.
+
+insertionsort(List) -> list:reverse(insertionsort_acc(List, [])).
+insertionsort_acc([], List) -> List;
+insertionsort_acc([Current | Tail], Sorted) -> insertionsort_acc(Tail, insert(Current, Sorted)).
 
 %
 %   huffman tree
@@ -77,15 +80,16 @@ tree(Sample) ->
     Freq = freq(Sample),
 
     color:out("Build huffman tree", green),
-    Tree = tree_build(Freq).
+    tree_build(Freq).
 
 tree_build([{Tree, _} | []]) ->
     Tree;
 tree_build(Freq) ->
+    fout(Freq),
     [First | [Next | Tail]] = Freq,
     {A, AF} = First,
     {B, BF} = Next,
-    tree_build(quicksort([{{A, B}, AF+BF} | Tail])).
+    tree_build(insertionsort([{{A, B}, AF+BF} | Tail])).
 
 %
 %   encoding table
@@ -116,15 +120,20 @@ encode([Char | Tail], Table, Sequence) ->
     encode(Tail, Table, Sequence ++ lookup(Char, Table)).
 
 %
-%   encode
+%   decode
 %
 
 decode([], _) -> [];
-decode(Sequence, Tree) -> decode(Sequence, Tree, []).
-decode(Sequence, Tree, Result) -> pew.
+decode(Sequence, Tree) -> decode(Sequence, [], Tree, Tree).
 
-decode_char(Char, Tree) -> pew.
-
+decode([], Result, _, Char) ->  Result ++ [Char];
+decode([Bit | Sequence], Result, Tree, {Left, Right}) ->
+    case Bit of
+        0 -> decode(Sequence, Result, Tree, Left);
+        1 -> decode(Sequence, Result, Tree, Right)
+    end;
+decode(Sequence, Result, Tree, Char) ->
+    decode(Sequence, Result ++ [Char], Tree, Tree).
 
 %
 %   helper

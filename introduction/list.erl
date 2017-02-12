@@ -94,7 +94,7 @@ insert(Element, [Current | Tail]) ->
         true -> [Element | [Current | Tail]]
     end.
 
-insertionsort(List) -> insertionsort_acc(List, []).
+insertionsort(List) -> reverse(insertionsort_acc(List, [])).
 insertionsort_acc([], List) -> List;
 insertionsort_acc([Current | Tail], Sorted) -> insertionsort_acc(Tail, insert(Current, Sorted)).
 
