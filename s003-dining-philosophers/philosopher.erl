@@ -1,6 +1,6 @@
 -module(philosopher).
 -compile(export_all).
--record(philo, {hungry, left, right, name, gui, ctrl}).
+-record(philo, {hungry, left, right, name, color, gui, ctrl}).
 
 -define(SleepEat, 50).
 -define(SleepDream, 500).
@@ -11,12 +11,13 @@
 %   philosopher, 3 states: dream, wait, eat
 %
 
-start(Hungry, Left, Right, Name, Ctrl) ->
+start(Hungry, Left, Right, Name, Color, Ctrl) ->
     Guest = #philo{
         name=Name,
         hungry=Hungry,
         left=Left,
         right=Right,
+        color=Color,
         gui=gui:start(Name),
         ctrl=Ctrl
     },
@@ -51,7 +52,7 @@ dream(Guest) ->
 wait(Guest) ->
     out("decides to eat", Guest),
     Guest#philo.gui ! waiting,
-    out("requests left chopstick", Guest),
+    out("requests both chopsticks", Guest),
     case chopstick:request(Guest#philo.left, Guest#philo.right, ?SleepWait) of
         ok -> ok;
         denied -> dream(Guest)
@@ -79,5 +80,10 @@ eat(Guest) ->
 sleep(Time) ->
     timer:sleep(Time).
 
-out(Str, Guest) -> io:format("~s ~s (~p).~n", [Guest#philo.name, Str, self()]).
-out(Str, Num, Guest) -> io:format("~s ~s (~w) (~p).~n", [Guest#philo.name, Str, Num, self()]).
+out(Str, Guest) ->
+    Out = io_lib:format("~s ~s (~p)", [Guest#philo.name, Str, self()]),
+    color:out(Out, Guest#philo.color).
+
+out(Str, Num, Guest) ->
+    Out = io_lib:format("~s ~s (~w) (~p)", [Guest#philo.name, Str, Num, self()]),
+    color:out(Out, Guest#philo.color).
