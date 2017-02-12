@@ -15,3 +15,7 @@ rel/example_project
 # End of https://www.gitignore.io/api/erlang
 
 *.DS_Store
+.vscode/
+
+*.sublime-workspace
+*.sublime-project
