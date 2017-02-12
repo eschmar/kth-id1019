@@ -43,7 +43,8 @@ brot(Width, Height, X, Y, X1, Depth, FileName) ->
     color:out(io_lib:format("Delta = ~w", [K]), cyan),
     color:out(io_lib:format("Picture generated in ~w ms", [T div 1000]), magenta),
     color:out(io_lib:format("Written to ~s", [FileName]), green),
-    ppm:write(FileName, Image).
+    Path = "img/" ++ FileName,
+    ppm:write(Path, Image).
 
 % whole mandelbrot set
 whole() -> brot(960, 560, -2.6, 1.2, 1.6, 64, "mandelbrot.ppm").
