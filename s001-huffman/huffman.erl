@@ -101,7 +101,6 @@ tree(Sample) ->
 tree_build([{Tree, _} | []]) ->
     Tree;
 tree_build(Freq) ->
-    fout(Freq),
     [First | [Next | Tail]] = Freq,
     {A, AF} = First,
     {B, BF} = Next,
@@ -150,10 +149,3 @@ decode([Bit | Sequence], Result, Tree, {Left, Right}) ->
     end;
 decode(Sequence, Result, Tree, Char) ->
     decode(Sequence, Result ++ [Char], Tree, Tree).
-
-%
-%   helper
-%
-
-fout(Str) ->
-    file:write_file("foo.txt", io_lib:fwrite("~p.\n", [Str]), [append]).
