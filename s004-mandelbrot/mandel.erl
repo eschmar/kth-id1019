@@ -18,7 +18,6 @@ mandelbrot(Width, Height, X, Y, K, Depth) ->
 rows(_, 0, _, _, Rows) -> Rows;
 rows(Width, Height, Trans, Depth, Rows) ->
     New = row(Width, Height, Trans, Depth, []),
-    erlang:display(list:count(New)),
     rows(Width, Height - 1, Trans, Depth, [New | Rows]).
 
 row(0, _, _, _, Cols) -> Cols;

@@ -5,10 +5,10 @@
 %   complex
 %
 
-new(X, Y) -> {X, Y}.
+new(R, Y) -> {R, Y}.
 
-add({X, Xi}, {Y, Yi}) -> {X+Y, Xi+Yi}.
+add({AR, AI}, {BR, BI}) -> {AR+BR, AI+BI}.
 
-sqr({X, Y}) -> {math:pow(X, 2) - math:pow(Y, 2), X * Y}.
+sqr({R, I}) -> {(R * R) - (I * I), 2 * R * I}.
 
-abs({X, Y}) -> math:sqrt(math:pow(X, 2) + math:pow(Y, 2)).
+abs({R, I}) -> math:sqrt(R * R + I * I).
