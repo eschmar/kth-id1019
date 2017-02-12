@@ -1,5 +1,6 @@
 -module(mandel).
 -compile(export_all).
+-define(THEME, inverted).
 
 %
 %   mandel
@@ -23,7 +24,7 @@ rows(Width, Height, Trans, Depth, Rows) ->
 row(0, _, _, _, Cols) -> Cols;
 row(Width, Height, Trans, Depth, Cols) ->
     C = Trans(Width, Height),
-    Color = theme:convert(brot:mandelbrot(C, Depth), Depth),
+    Color = theme:convert(brot:mandelbrot(C, Depth), Depth, ?THEME),
     row(Width - 1, Height, Trans, Depth, [Color | Cols]).
 
 %
@@ -43,7 +44,7 @@ brot(Width, Height, X, Y, X1, Depth, FileName) ->
     color:out(io_lib:format("Delta = ~w", [K]), cyan),
     color:out(io_lib:format("Picture generated in ~w ms", [T div 1000]), magenta),
     color:out(io_lib:format("Written to ~s", [FileName]), green),
-    Path = "img/" ++ FileName,
+    Path = "build/" ++ FileName,
     ppm:write(Path, Image).
 
 % whole mandelbrot set
@@ -60,5 +61,5 @@ coord(X, Y, X1) when (X =< 960) and (Y =< 560) ->
 demo() -> brot(1920, 1080, -0.14, 0.85, -0.13, 128, "demo.ppm").
 
 % more demos
-interesting() -> 
-    brot(1920, 1080, -0.005624999999999769, 0.766875, 0.013, 256, "interesting.ppm").
+galaxy() -> 
+    brot(1920, 1080, -0.005624999999999769, 0.766875, 0.013, 256, "galaxy.ppm").
