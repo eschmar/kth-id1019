@@ -19,10 +19,39 @@ mandelbrot(Width, Height, X, Y, K, Depth, Cores) ->
     Interval = Height div Cores,
     trigger_rows(Width, Height, Interval, Trans, Depth, MainProcess),
     Grid = receive_rows(Cores, []),
-    Grid.
+    extractResult(insertionsort(Grid), []).
+
+%
+%   insertion sort
+%
+
+insert(Element, []) -> [Element];
+insert(Element, [Current | Tail]) ->
+    {A, _} = Element,
+    {B, _} = Current,
+    if
+        B < A -> [Current | insert(Element, Tail)];
+        true -> [Element | [Current | Tail]]
+    end.
+
+insertionsort(List) -> list:reverse(insertionsort_acc(List, [])).
+insertionsort_acc([], List) -> List;
+insertionsort_acc([Current | Tail], Sorted) -> insertionsort_acc(Tail, insert(Current, Sorted)).
+
+%
+%   ExtractResult
+%
+
+extractResult([], Result) -> Result;
+extractResult([{Pew, Current} | Tail], SubResult) ->
+    extractResult(Tail, Current ++ SubResult).
+
+%
+%   rows
+%
 
 trigger_rows(Width, Height, Interval, Trans, Depth, MainProcess) ->
-    spawn_link(fun() -> rows(Width, Height, Height - Interval, Trans, Depth, MainProcess, []) end),
+    spawn_link(fun() -> rows(Width, Height, Height, Height - Interval, Trans, Depth, MainProcess, []) end),
 
     if
         Height > Interval -> trigger_rows(Width, Height - Interval, Interval, Trans, Depth, MainProcess);
@@ -33,15 +62,15 @@ receive_rows(0, Result) -> Result;
 receive_rows(Cores, SubResult) ->
     receive
         {return, Rows} ->
-            receive_rows(Cores - 1, Rows ++ SubResult);
+            receive_rows(Cores - 1, [Rows] ++ SubResult);
         quit ->
             ok
     end.
 
-rows(_, Offset, Offset, _, _, Pid, Rows) -> Pid ! {return, Rows};
-rows(Width, Height, Offset, Trans, Depth, Pid, Rows) ->
+rows(_, OrigHeight, Offset, Offset, _, _, Pid, Rows) -> Pid ! {return, {OrigHeight, Rows}};
+rows(Width, OrigHeight, Height, Offset, Trans, Depth, Pid, Rows) ->
     New = row(Width, Height, Trans, Depth, []),
-    rows(Width, Height - 1, Offset, Trans, Depth, Pid, [New | Rows]).
+    rows(Width, OrigHeight, Height - 1, Offset, Trans, Depth, Pid, [New | Rows]).
 
 row(0, _, _, _, Cols) -> Cols;
 row(Width, Height, Trans, Depth, Cols) ->
