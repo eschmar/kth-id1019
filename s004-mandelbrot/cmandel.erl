@@ -43,7 +43,7 @@ insertionsort_acc([Current | Tail], Sorted) -> insertionsort_acc(Tail, insert(Cu
 %
 
 extractResult([], Result) -> Result;
-extractResult([{Pew, Current} | Tail], SubResult) ->
+extractResult([{_, Current} | Tail], SubResult) ->
     extractResult(Tail, Current ++ SubResult).
 
 %
@@ -94,6 +94,7 @@ brot(Width, Height, X, Y, X1, Depth, FileName, Cores) ->
     Image = mandelbrot(Width, Height, X, Y, K, Depth, Cores),
     T = timer:now_diff(erlang:timestamp(), T0),
     color:out("Config:", cyan),
+    color:out(io_lib:format("~w Cores detected", [erlang:system_info(schedulers_online)]), cyan),
     color:out(io_lib:format("Z = {~w, ~w}", [X, Y]), cyan),
     color:out(io_lib:format("x1 = ~w", [X1]), cyan),
     color:out(io_lib:format("Delta = ~w", [K]), cyan),
