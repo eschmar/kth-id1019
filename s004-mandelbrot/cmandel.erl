@@ -18,33 +18,7 @@ mandelbrot(Width, Height, X, Y, K, Depth, Cores) ->
     MainProcess = self(),
     Interval = Height div Cores,
     trigger_rows(Width, Height, Interval, Trans, Depth, MainProcess),
-    Grid = receive_rows(Cores, []),
-    extractResult(insertionsort(Grid), []).
-
-%
-%   insertion sort
-%
-
-insert(Element, []) -> [Element];
-insert(Element, [Current | Tail]) ->
-    {A, _} = Element,
-    {B, _} = Current,
-    if
-        B < A -> [Current | insert(Element, Tail)];
-        true -> [Element | [Current | Tail]]
-    end.
-
-insertionsort(List) -> list:reverse(insertionsort_acc(List, [])).
-insertionsort_acc([], List) -> List;
-insertionsort_acc([Current | Tail], Sorted) -> insertionsort_acc(Tail, insert(Current, Sorted)).
-
-%
-%   ExtractResult
-%
-
-extractResult([], Result) -> Result;
-extractResult([{_, Current} | Tail], SubResult) ->
-    extractResult(Tail, Current ++ SubResult).
+    receive_rows(Height, Interval, []).
 
 %
 %   rows
@@ -58,16 +32,16 @@ trigger_rows(Width, Height, Interval, Trans, Depth, MainProcess) ->
         true -> ok
     end.
 
-receive_rows(0, Result) -> Result;
-receive_rows(Cores, SubResult) ->
+receive_rows(0, _, Result) -> Result;
+receive_rows(Height, Interval, SubResult) ->
     receive
-        {return, Rows} ->
-            receive_rows(Cores - 1, [Rows] ++ SubResult);
+        {return, Height, Rows} ->
+            receive_rows(Height - Interval, Interval, lists:append(Rows, SubResult));
         quit ->
             ok
     end.
 
-rows(_, OrigHeight, Offset, Offset, _, _, Pid, Rows) -> Pid ! {return, {OrigHeight, Rows}};
+rows(_, OrigHeight, Offset, Offset, _, _, Pid, Rows) -> Pid ! {return, OrigHeight, Rows};
 rows(Width, OrigHeight, Height, Offset, Trans, Depth, Pid, Rows) ->
     New = row(Width, Height, Trans, Depth, []),
     rows(Width, OrigHeight, Height - 1, Offset, Trans, Depth, Pid, [New | Rows]).
@@ -94,7 +68,7 @@ brot(Width, Height, X, Y, X1, Depth, FileName, Cores) ->
     Image = mandelbrot(Width, Height, X, Y, K, Depth, Cores),
     T = timer:now_diff(erlang:timestamp(), T0),
     color:out("Config:", cyan),
-    color:out(io_lib:format("~w Cores detected", [erlang:system_info(schedulers_online)]), cyan),
+    color:out(io_lib:format("~w Cores detected", [Cores]), cyan),
     color:out(io_lib:format("Z = {~w, ~w}", [X, Y]), cyan),
     color:out(io_lib:format("x1 = ~w", [X1]), cyan),
     color:out(io_lib:format("Delta = ~w", [K]), cyan),
