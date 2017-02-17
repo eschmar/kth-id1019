@@ -68,7 +68,7 @@ brot(Width, Height, X, Y, X1, Depth, FileName, Cores) ->
     Image = mandelbrot(Width, Height, X, Y, K, Depth, Cores),
     T = timer:now_diff(erlang:timestamp(), T0),
     color:out("Config:", cyan),
-    color:out(io_lib:format("~w Cores detected", [Cores]), cyan),
+    color:out(io_lib:format("Calculating using ~w processes", [Cores]), yellow),
     color:out(io_lib:format("Z = {~w, ~w}", [X, Y]), cyan),
     color:out(io_lib:format("x1 = ~w", [X1]), cyan),
     color:out(io_lib:format("Delta = ~w", [K]), cyan),
@@ -94,5 +94,8 @@ demo() -> brot(1920, 1080, -0.14, 0.85, -0.13, 128, "demo.ppm").
 galaxy() -> 
     brot(1920, 1080, -0.005624999999999769, 0.766875, 0.013, 256, "galaxy.ppm").
 
-% galaxy2() -> 
-%     brot(1920, 1080, -0.005624999999999769, 0.766875, 0.013, 128, "galaxy.ppm").
+% fjord image
+fjord() -> s(-0.02,0.8,0).
+
+% search in full hd
+s(X, Y, X1) -> brot(1920, 1080, X, Y, X1, 64, "pew.ppm").
