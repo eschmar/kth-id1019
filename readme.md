@@ -1,7 +1,7 @@
 # kth-id1019
 
-<a target="_blank" href="https://github.com/eschmar/kth-id1019/raw/master/s004-mandelbrot/img/galaxy.jpg">
-    <img src="https://github.com/eschmar/kth-id1019/raw/master/s004-mandelbrot/img/galaxy.jpg" alt="Mandelbrot" style="max-width:100%;">
+<a target="_blank" href="https://github.com/eschmar/kth-id1019/raw/master/s004-mandelbrot/img/fjord.jpg">
+    <img src="https://github.com/eschmar/kth-id1019/raw/master/s004-mandelbrot/img/fjord.jpg" alt="Mandelbrot" style="max-width:100%;">
 </a>
 
 - [x] Seminar 001 - Huffman Coding

@@ -1,6 +1,14 @@
 -module(theme).
 -compile(export_all).
 
+-define(GreenIsh, {34, 102, 102}).
+-define(DarkGreenIsh, {0, 51, 51}).
+-define(DarkDarkGreenIsh, {0, 49, 49}).
+-define(Orange, {255, 172, 5}).
+-define(DarkOrange, {89, 60, 0}).
+-define(BrightOrange, {255, 118, 5}).
+-define(Red, {255, 5, 5}).
+
 %
 %   theme - iteration to color converter
 %
@@ -39,11 +47,10 @@ convert(Depth, Max, neo) ->
 
     case Section of
         0 -> {0, 0, trunc(255 * (Fraction - Section))};
-        1 -> gradient({34,102,102}, {0, 51, 51}, Percent); % blue-ish
-        % 2 -> gradient({123,159, 53}, {53, 79,  0}, Percent); % green-ish
-        2 -> gradient({0, 35, 35}, {255, 172, 5}, Percent); % green-ish
-        3 -> gradient({255, 172, 5}, {255, 21, 21}, Percent); % yellow-ish
-        4 -> gradient({255,118,  5}, {255,  5,  5}, Percent)
+        1 -> gradient(?GreenIsh, ?DarkGreenIsh, Percent); % blue-ish
+        2 -> gradient(?DarkDarkGreenIsh, ?Orange, Percent); % green-ish
+        3 -> gradient(?Orange, ?DarkOrange, Percent); % yellow-ish
+        4 -> gradient(?BrightOrange, ?Red, Percent)
     end.
 
 
