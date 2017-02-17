@@ -1,6 +1,6 @@
 -module(cmandel).
 -compile(export_all).
--define(THEME, inverted).
+-define(THEME, neo).
 
 %
 %   concurrent mandel
@@ -80,13 +80,6 @@ brot(Width, Height, X, Y, X1, Depth, FileName, Cores) ->
 % whole mandelbrot set
 whole() -> brot(960, 560, -2.6, 1.2, 1.6, 64, "mandelbrot.ppm").
 
-% discover the mandelbrot set based on coordinates of the whole image
-coord(X, Y, X1) when (X =< 960) and (Y =< 560) ->
-    Real = (-2.6 + X * 0.004375),
-    Imaginary = (1.2 - Y * 0.004375),
-    FileName = io_lib:format("coord-~w-~w-~w.ppm", [X, Y, X1]),
-    brot(960, 560, Real, Imaginary, X1, 256, FileName).
-
 % pre given demo
 demo() -> brot(1920, 1080, -0.14, 0.85, -0.13, 128, "demo.ppm").
 
@@ -96,6 +89,9 @@ galaxy() ->
 
 % fjord image
 fjord() -> s(-0.02,0.8,0).
+fjord2() -> s(-0.01,0.8,0).
 
 % search in full hd
-s(X, Y, X1) -> brot(1920, 1080, X, Y, X1, 64, "pew.ppm").
+s(X, Y, X1) -> brot(1920, 1080, X, Y, X1, 64, "s.ppm").
+s4k(X, Y, X1) -> brot(3840, 2160, X, Y, X1, 64, "s4k.ppm").
+s8k(X, Y, X1) -> brot(7680, 4320, X, Y, X1, 64, "s8k.ppm").
