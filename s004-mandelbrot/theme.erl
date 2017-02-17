@@ -46,7 +46,8 @@ convert(Depth, Max, neo) ->
     Percent = (Fraction - Section),
 
     case Section of
-        0 -> {0, 0, trunc(255 * (Fraction - Section))};
+        % 0 -> {0, 0, trunc(255 * (Fraction - Section))};
+        0 -> gradient({1, 29, 51}, {6, 6, 29}, Percent); % green-ish
         1 -> gradient(?GreenIsh, ?DarkGreenIsh, Percent); % blue-ish
         2 -> gradient(?DarkDarkGreenIsh, ?Orange, Percent); % green-ish
         3 -> gradient(?Orange, ?DarkOrange, Percent); % yellow-ish
