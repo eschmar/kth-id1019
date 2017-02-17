@@ -19,3 +19,9 @@ rel/example_project
 
 *.sublime-workspace
 *.sublime-project
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib

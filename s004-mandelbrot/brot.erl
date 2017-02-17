@@ -5,10 +5,16 @@
 %   brot
 %
 
-mandelbrot(C, M) ->
-    Z0 = complex:new(0, 0),
+mandelbrot({CR, CI}, M) ->
     I = 0,
-    test(I, Z0, C, M).
+
+    % calculate in c
+    complex_nif:depth(I, 0.0, 0.0, CR, CI, M).
+
+    % calculate in erlang
+    % Z0 = complex:new(0, 0),
+    % C = complex:new(CR, CI),
+    % test(I, Z0, C, M).
 
 test(I, Z, C, M) ->
     Absolute = complex:abs(Z),
@@ -23,7 +29,7 @@ test(I, Z, C, M) ->
 %
 
 testImage() ->
-    ppm:write("pew.jpg", [
+    ppm:write("test.ppm", [
         [{255,0,0},{255,0,0},{255,0,0},{255,0,0},{255,0,0},{255,0,0},{255,0,0},{255,0,0}],
         [{0,255,0},{0,255,0},{0,255,0},{0,255,0},{0,255,0},{0,255,0},{0,255,0},{0,255,0}],
         [{0,0,255},{0,0,255},{0,0,255},{0,0,255},{0,0,255},{0,0,255},{0,0,255},{0,0,255}]
