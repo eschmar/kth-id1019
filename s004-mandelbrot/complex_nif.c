@@ -22,7 +22,7 @@ extern int depth(double cr, double ci, int m) {
 
 static ERL_NIF_TERM depth_nif(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 {
-    int i, m;
+    int m;
     double cr, ci;
 
     if (!enif_get_double(env, argv[0], &cr)) {
