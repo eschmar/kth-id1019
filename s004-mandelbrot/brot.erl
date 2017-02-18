@@ -6,13 +6,11 @@
 %
 
 mandelbrot({CR, CI}, M) ->
-    I = 0,
-
     % calculate in c
-    complex_nif:depth(I, 0.0, 0.0, CR, CI, M).
+    complex_nif:depth(CR, CI, M).
 
     % calculate in erlang
-    % test(I, 0.0, 0.0, CR, CI, M).
+    % test(0, 0.0, 0.0, CR, CI, M).
 
 test(M, _Zr, _Zi, _Cr, _Ci, M) ->
     0;
