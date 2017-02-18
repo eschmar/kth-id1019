@@ -1,7 +1,23 @@
 #include "erl_nif.h"
 #include <complex.h>
 
-extern int depth(int i, double zr, double zi, double cr, double ci, int m);
+extern int depth(int i, double zr, double zi, double cr, double ci, int m) {
+    double complex c = cr + ci * I;
+    double complex z = zr + zi * I;
+    double abs = cabs(z);
+
+    while (m != i && 2 >= abs) {
+        i++;
+        z = cpow(z, 2) + c;
+        abs = cabs(z);
+    }
+
+    if (m == i) {
+        return 0;
+    }
+
+    return i;
+}
 
 static ERL_NIF_TERM depth_nif(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 {
@@ -29,21 +45,8 @@ static ERL_NIF_TERM depth_nif(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[
         return enif_make_badarg(env);
     }
 
-    double complex c = cr + ci * I;
-    double complex z = zr + zi * I;
-    double abs = cabs(z);
-
-    while (m != i && 2 >= abs) {
-        i++;
-        z = cpow(z, 2) + c;
-        abs = cabs(z);
-    }
-
-    if (m == i) {
-        return enif_make_int(env, 0);
-    }
-
-    return enif_make_int(env, i);
+    int result = depth(i, zr, zi, cr, ci, m);
+    return enif_make_int(env, result);
 }
 
 static ErlNifFunc nif_funcs[] = {

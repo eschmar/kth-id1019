@@ -93,5 +93,6 @@ fjord2() -> s(-0.01,0.8,0).
 
 % search in full hd
 s(X, Y, X1) -> brot(1920, 1080, X, Y, X1, 64, "s.ppm").
+sdeep(X, Y, X1) -> brot(1920, 1080, X, Y, X1, 128, "s.ppm").
 s4k(X, Y, X1) -> brot(3840, 2160, X, Y, X1, 64, "s4k.ppm").
 s8k(X, Y, X1) -> brot(7680, 4320, X, Y, X1, 64, "s8k.ppm").
