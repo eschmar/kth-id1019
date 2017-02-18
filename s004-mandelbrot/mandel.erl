@@ -93,6 +93,7 @@ fjord2() -> s(-0.01,0.8,0).
 
 % spiral image
 spiral() -> sdeep(0.294, 0.4835, 0.298).
+spiral4kzoom() -> brot(3840, 2160, 0.2963, 0.4831, 0.29675, 256, "spiral4kzoom.ppm").
 
 % search in full hd
 s(X, Y, X1) -> brot(1920, 1080, X, Y, X1, 64, "s.ppm").
