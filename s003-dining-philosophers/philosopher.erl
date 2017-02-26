@@ -2,10 +2,9 @@
 -compile(export_all).
 -record(philo, {hungry, left, right, name, color, gui, ctrl}).
 
--define(SleepEat, 50).
--define(SleepDream, 500).
--define(SleepWait, 1000).
--define(SleepWaitDelay, 100).
+-define(Dream, 400).
+-define(Eat, 200).
+-define(Timeout, 1000).
 
 %
 %   philosopher, 3 states: dream, wait, eat
@@ -34,8 +33,9 @@ live(Guest) ->
             dream(Guest);
         true ->
             Guest#philo.gui ! abort,
-            sleep(1000),
+            % sleep(?Timeout),
             Guest#philo.gui ! stop,
+            % Guest#philo.ctrl ! done,
             out("=====================> is happy <===", Guest)
     end.
 
@@ -43,8 +43,7 @@ live(Guest) ->
 dream(Guest) ->
     out("fell asleep", Guest),
     Guest#philo.gui ! leave,
-    Time = ?SleepDream + (rand:uniform(8) * 100),
-    sleep(Time),
+    sleep(?Dream),
     out("woke up", Guest),
     wait(Guest).
 
@@ -52,25 +51,25 @@ dream(Guest) ->
 wait(Guest) ->
     out("decides to eat", Guest),
     Guest#philo.gui ! waiting,
-    out("requests both chopsticks", Guest),
-    case chopstick:request(Guest#philo.left, Guest#philo.right, ?SleepWait) of
-        ok -> ok;
+    out(io_lib:format("requests both chopsticks: [~p & ~p]", [Guest#philo.left, Guest#philo.right]), Guest),
+    case chopstick:request(Guest#philo.left, Guest#philo.right, ?Timeout) of
+        ok ->
+            out("acquired both chopsticks", Guest),
+            eat(Guest);
         denied -> dream(Guest)
-    end,
-    
-    out("acquired both chopsticks", Guest),
-    eat(Guest).
+    end.
 
 % eat noodles
 eat(Guest) ->
     out("starts eating", Guest),
     Guest#philo.gui ! enter,
-    sleep(?SleepEat),
+    sleep(?Eat),
     out("finished eating", Guest),
-    out("returns left chopstick", Guest),
+
+    out(io_lib:format("returns both chopsticks: [~p & ~p]", [Guest#philo.left, Guest#philo.right]), Guest),
     chopstick:return(Guest#philo.left),
-    out("returns right chopstick", Guest),
     chopstick:return(Guest#philo.right),
+
     live(Guest#philo{hungry=Guest#philo.hungry-1}).
 
 %
@@ -78,12 +77,12 @@ eat(Guest) ->
 %
 
 sleep(Time) ->
-    timer:sleep(Time).
+    timer:sleep(rand:uniform(Time)).
 
 out(Str, Guest) ->
-    Out = io_lib:format("~s ~s (~p)", [Guest#philo.name, Str, self()]),
+    Out = io_lib:format("~s ~p ~s", [Guest#philo.name, self(), Str]),
     color:out(Out, Guest#philo.color).
 
 out(Str, Num, Guest) ->
-    Out = io_lib:format("~s ~s (~w) (~p)", [Guest#philo.name, Str, Num, self()]),
+    Out = io_lib:format("~s ~p ~s (~w)", [Guest#philo.name, self(), Str, Num]),
     color:out(Out, Guest#philo.color).

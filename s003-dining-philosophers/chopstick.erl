@@ -1,6 +1,8 @@
 -module(chopstick).
 -compile(export_all).
 
+-define(Delay, 40).
+
 %
 %   chopstick
 %
@@ -10,23 +12,25 @@ start() ->
     spawn_link(fun() -> available() end).
 
 available() ->
-    out("Chopstick available"),
     receive
         {request, From} ->
-            From ! granted,
+            out("Chopstick gone"),
+            From ! {granted, self()},
             gone(From);
         quit ->
             ok
     end.
 
 gone(Holder) ->
-    out("Chopstick gone"),
     receive
         {return, Holder} ->
-            Holder ! released,
+            out("Chopstick available"),
             available();
-        {return, From} ->
-            From ! denied,
+        {return, _} ->
+            out("Chopstick return denied!"),
+            gone(Holder);
+        {request, From} ->
+            From ! {denied, self()},
             gone(Holder);
         quit ->
             ok
@@ -38,26 +42,25 @@ gone(Holder) ->
 
 request(Stick, Stick2, Timeout) ->
     Stick ! {request, self()},
-    timer:sleep(100),
+    sleep(?Delay),
     Stick2 ! {request, self()},
-    case receiveStick(Timeout) of
-        ok -> receiveStick(Timeout);
-        denied -> denied
-    end.    
 
-receiveStick(Timeout) ->
     receive
-        granted ->
-            ok
-    after Timeout -> denied
+        {granted, FirstStick} ->
+            receive
+                {granted, _SecondStick} ->
+                    ok
+            after Timeout -> 
+                out(io_lib:format("Didn't receive second stick, return first (~p)", [FirstStick])),
+                FirstStick ! {return, self()},
+                denied
+            end
+    after Timeout -> 
+        denied
     end.
 
 return(Stick) ->
-    Stick ! {return, self()},
-    receive
-        released ->
-            ok
-    end.
+    Stick ! {return, self()}.
 
 quit(Stick) ->
     io:format(" ------------------> ~p terminates ~p.", [self(), Stick]),
@@ -68,3 +71,6 @@ quit(Stick) ->
 %
 
 out(Str) -> io:format("~s (~p).~n", [Str, self()]).
+
+sleep(Time) ->
+    timer:sleep(rand:uniform(Time)).
