@@ -59,7 +59,7 @@ row(Width, Height, Trans, Depth, Cols) ->
 brot(Width, Height, X, Y, X1, Depth, FileName) ->
     Cores = erlang:system_info(schedulers_online),
     % NOTE: using the max number of available threads might not work
-    brot(Width, Height, X, Y, X1, Depth, FileName, Cores div 2).
+    brot(Width, Height, X, Y, X1, Depth, FileName, Cores div 4).
 
 brot(Width, Height, X, Y, X1, Depth, FileName, Cores) ->
     init(),
@@ -104,3 +104,57 @@ s(X, Y, X1) -> brot(1920, 1080, X, Y, X1, 64, "s.ppm").
 sdeep(X, Y, X1) -> brot(1920, 1080, X, Y, X1, 128, "sdeep.ppm").
 s4k(X, Y, X1) -> brot(3840, 2160, X, Y, X1, 64, "s4k.ppm").
 s8k(X, Y, X1) -> brot(7680, 4320, X, Y, X1, 64, "s8k.ppm").
+
+%
+%   scanning
+%
+
+numberOfThreads() ->
+    erlang:system_info(schedulers_online) div 4.
+
+fractal(X, Y, K, Depth, Width, Height, FileName, Cores) ->
+    init(),
+
+    color:out("Config:", cyan),
+    color:out(io_lib:format("Calculating using ~w processes", [Cores]), yellow),
+    color:out(io_lib:format("Point = {~w, ~w}", [X, Y]), cyan),
+    color:out(io_lib:format("Delta = ~w", [K]), cyan),
+    color:out(io_lib:format("Processing...", []), magenta),
+
+    T0 = erlang:timestamp(),
+    Image = mandelbrot(Width, Height, X, Y, K, Depth, Cores),
+    T = timer:now_diff(erlang:timestamp(), T0),
+
+    color:out(io_lib:format("...picture generated in ~w ms", [T div 1000]), magenta),
+    color:out(io_lib:format("Written to ~s", [FileName]), green),
+    Path = "build/" ++ FileName,
+    ppm:write(Path, Image).
+
+%
+% Traversal
+%
+
+doneRendering() ->
+    init(),
+    color:out("Done", cyan).
+
+traverseX(_, _, _, _, 0) -> doneRendering();
+
+traverseX(X, Y, K, Offset, Steps) ->
+    Filename = io_lib:format("traverse_x_~4..0w.ppm", [Steps]),
+    fractal(X, Y, K, 128, 960, 540, Filename, numberOfThreads()),
+    traverseX(X + Offset, Y, K, Offset, Steps - 1).
+
+traverseY(_, _, _, _, 0) -> doneRendering();
+
+traverseY(X, Y, K, Offset, Steps) ->
+    Filename = io_lib:format("traverse_y_~4..0w.ppm", [Steps]),
+    fractal(X, Y, K, 128, 960, 540, Filename, numberOfThreads()),
+    traverseY(X, Y + Offset, K, Offset, Steps - 1).
+
+zoom(_, _, _, _, 0) -> doneRendering();
+
+zoom(X, Y, K, Offset, Steps) ->
+    Filename = io_lib:format("zoom_~4..0w.ppm", [Steps]),
+    fractal(X, Y, K, 128, 960, 540, Filename, numberOfThreads()),
+    zoom(X, Y, K + Offset, Offset, Steps - 1).
