@@ -58,21 +58,24 @@ row(Width, Height, Trans, Depth, Cols) ->
 
 brot(Width, Height, X, Y, X1, Depth, FileName) ->
     Cores = erlang:system_info(schedulers_online),
-    brot(Width, Height, X, Y, X1, Depth, FileName, Cores).
+    brot(Width, Height, X, Y, X1, Depth, FileName, Cores div 2).
 
 brot(Width, Height, X, Y, X1, Depth, FileName, Cores) ->
     init(),
-
     K = (X1 - X) / Width,
-    T0 = erlang:timestamp(),
-    Image = mandelbrot(Width, Height, X, Y, K, Depth, Cores),
-    T = timer:now_diff(erlang:timestamp(), T0),
+
     color:out("Config:", cyan),
     color:out(io_lib:format("Calculating using ~w processes", [Cores]), yellow),
     color:out(io_lib:format("Z = {~w, ~w}", [X, Y]), cyan),
     color:out(io_lib:format("x1 = ~w", [X1]), cyan),
     color:out(io_lib:format("Delta = ~w", [K]), cyan),
-    color:out(io_lib:format("Picture generated in ~w ms", [T div 1000]), magenta),
+    color:out(io_lib:format("Processing...", []), magenta),
+
+    T0 = erlang:timestamp(),
+    Image = mandelbrot(Width, Height, X, Y, K, Depth, Cores),
+    T = timer:now_diff(erlang:timestamp(), T0),
+
+    color:out(io_lib:format("...picture generated in ~w ms", [T div 1000]), magenta),
     color:out(io_lib:format("Written to ~s", [FileName]), green),
     Path = "build/" ++ FileName,
     ppm:write(Path, Image).

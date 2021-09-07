@@ -14,3 +14,21 @@ suppress
 
 * Add the absolute path to the erlang `erl_nif.h`
 * Add `-flat_namespace -undefined suppress` on macOS
+
+## run mandelbrot
+
+```erl
+% cd ../helper
+c(color).
+c(debug).
+
+% cd ../mandelbrot
+c(theme).
+c(ppm).
+c(complex).
+c(complex_nif).
+c(brot).
+c(mandel).
+
+mandel:whole().
+```

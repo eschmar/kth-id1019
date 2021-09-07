@@ -19,7 +19,7 @@ test(I, Zr, Zi, Cr, Ci, M) ->
     Zr2 = Zr * Zr,
     Zi2 = Zi * Zi,
     A2 = Zr2 + Zi2,
-    if 
+    if
         A2 < 4.0 ->
             Sr = Zr2 - Zi2 + Cr,
             Si = 2*Zr*Zi + Ci,
