@@ -58,6 +58,7 @@ row(Width, Height, Trans, Depth, Cols) ->
 
 brot(Width, Height, X, Y, X1, Depth, FileName) ->
     Cores = erlang:system_info(schedulers_online),
+    % NOTE: using the max number of available threads might not work
     brot(Width, Height, X, Y, X1, Depth, FileName, Cores div 2).
 
 brot(Width, Height, X, Y, X1, Depth, FileName, Cores) ->
