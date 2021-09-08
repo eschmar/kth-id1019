@@ -158,3 +158,10 @@ zoom(X, Y, K, Offset, Steps) ->
     Filename = io_lib:format("zoom_~4..0w.ppm", [Steps]),
     fractal(X, Y, K, 128, 960, 540, Filename, numberOfThreads()),
     zoom(X, Y, K + Offset, Offset, Steps - 1).
+
+depth(_, _, _, _, _, 0) -> doneRendering();
+
+depth(X, Y, K, Depth, Offset, Steps) ->
+    Filename = io_lib:format("depth_~4..0w_~w.ppm", [Steps, Depth]),
+    fractal(X, Y, K, Depth, 960, 960, Filename, numberOfThreads()),
+    depth(X, Y, K, Depth + Offset, Offset, Steps - 1).
